@@ -532,46 +532,6 @@ export const BgObj = {
   color: "#fff",
   border: "5px solid hotpink",
 };
-export const BgObjRed = {
-  backgroundColor: "red",
-  color: "#fff",
-  border: "5px solid hotpink",
-};
-```
-
-```jsx
-import React from "react";
-import { BgObj, BgObjRed } from "./bg"; // .js 생략 가능
-
-function Header() {
-  // js 코드 자리
-  const title = "웹 서비스 제목";
-  const version = 0.5;
-  function say() {
-    return "하하하";
-  }
-  const isLogin = true;
-
-  // 아래는 html jsx 출력자리
-  return (
-    <div>
-      <div style={isLogin ? BgObj : BgObjRed}>{title}</div>
-      <div>
-        버전:{version} {say()}
-      </div>
-    </div>
-  );
-}
-
-export default Header;
-```
-
-```js
-export const BgObj = {
-  backgroundColor: "green",
-  color: "#fff",
-  border: "5px solid hotpink",
-};
 const BgObjRed = {
   backgroundColor: "red",
   color: "#fff",
@@ -607,3 +567,22 @@ function Header() {
 
 export default Header;
 ```
+
+# CSS-in-JS
+
+- Styled Component
+- Emotion
+
+## 1. 환경설정
+
+```bash
+npm i @emotion/react @emotion/styled --force
+
+npm i @emotion/react
+npm i @emotion/styled
+```
+
+## 2. 왜 필요한가?
+
+- 태그처럼 생겼다. (내가만든 태그)
+- 태그가 내용을 설명하도록 구성한다.
