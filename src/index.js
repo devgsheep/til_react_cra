@@ -10,11 +10,12 @@ import Todos from "./pages/Todos";
 import Users from "./pages/Users";
 import Comments from "./pages/Comments";
 import Test from "./pages/Test";
+import RegisterPage from "./pages/RegisterPage";
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 
 root.render(
   <div className="wrap">
-    <Test></Test>
+    <RegisterPage></RegisterPage>
   </div>,
 );
