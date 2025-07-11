@@ -16,6 +16,6 @@ const root = ReactDOM.createRoot(document.getElementById("root"));
 
 root.render(
   <div className="wrap">
-    <RegisterPage></RegisterPage>
+    <RegisterPage />
   </div>,
 );

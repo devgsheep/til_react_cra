@@ -76,6 +76,9 @@ export const TextArea = styled.textarea`
   width: 100%;
   padding: 8px;
   font-size: 12px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  resize: vertical;
 `;
 
 export const SubmitButton = styled.button`
