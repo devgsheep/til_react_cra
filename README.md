@@ -2084,3 +2084,178 @@ function App() {
 
 export default App;
 ```
+
+## 4. 종합예제
+
+- 리액트에는 리액트 전용 변수, 즉 state가 2종류 있음.
+- 1. 컴포넌트에서만 생성 및 관리되는 useState가 있음.
+- 2. 리액트 전체 영역에서 생성 및 관리되는 context가 있음.
+- 공통적으로 state가 바뀌면 리랜더링이 일어난다.
+
+### 4.1. context를 다루는 context 전용 API가 있다.
+
+- context는 대표적으로 사용자정보, 테마, 장바구니 등에 활용한다.
+- 라이브러리도 꽤 많다. (RTK - Redux Toolkt, Recoil, Zustands 등)
+- context는 다루기 위한 좋은 도구로 useReducer를 활용했었음.
+
+### 4.2. useReducer 란?
+
+- useState에 비해서 다양하게 state를 관리할 수 있다.
+- useReducer에 state와 action, reduce함수에 대해서 반드시 이해하자.
+
+### 4.3. 예제
+
+- context를 모아둔 폴더. 즉, src/contexts 폴더 확인
+- TodoContext.jsx
+
+```jsx
+// 1. Todo를 위한 context 생성
+
+import { createContext } from "react";
+
+// 1.1. Todo 데이터를 위한 context
+export const TodoStateContext = createContext(null);
+// 1.2. Todo 데이터 업데이트를 위한 context
+export const TodoDispatchContext = createContext(null);
+```
+
+- TodoProvider.jsx 생성
+
+```jsx
+// 2. Provider 생성
+
+import { useReducer } from "react";
+import { TodoDispatchContext, TodoStateContext } from "./TodoContext";
+
+// 2.1. 초기값 생성
+const initialTodoState = [];
+// 2.2. 리듀서 함수 생성
+function todoReducer(state, action) {
+  // action = {type:"add", payload: "안녕하세요."}
+  switch (action.type) {
+    case "add":
+      return [
+        ...state,
+        { id: new Date(), text: action.payload, completed: false },
+      ];
+    case "toggle":
+      // action = {type:"toggle", payload: 아이디}
+      return state.map(item =>
+        item.id === action.payload
+          ? { ...item, completed: !item.completed }
+          : item,
+      );
+    case "delete":
+      // action = {type:"delete", payload: 아이디 }
+      return state.filter(item => item.id !== action.payload);
+    default:
+      return state;
+  }
+}
+// 2.3. Provider 생성
+export function TodoProvider({ children }) {
+  const [todos, dispatch] = useReducer(todoReducer, initialTodoState);
+  return (
+    <TodoStateContext.Provider value={todos}>
+      <TodoDispatchContext.Provider value={dispatch}>
+        {children}
+      </TodoDispatchContext.Provider>
+    </TodoStateContext.Provider>
+  );
+}
+```
+
+- App.jsx
+
+```jsx
+import { TodoProvider } from "./contexts/TodoProvider";
+
+function App() {
+  return <TodoProvider>App</TodoProvider>;
+}
+
+export default App;
+```
+
+- /src/components/todo 폴더
+- TodoAdd.jsx 추가용 컴포넌트
+
+```jsx
+import { useContext, useState } from "react";
+import { TodayContext } from "../../TodayContext";
+
+function TodoAdd() {
+  // todoContext를 활용하겠다.
+  const { todos, dispatch } = useContext(TodayContext);
+  const [text, setText] = useState("");
+  return (
+    <div>
+      <input
+        type="text"
+        value={text}
+        onChange={e => setText(e.target.value)}
+        placeholder="할일을 입력해주세요."
+      />
+      <button
+        onClick={() => {
+          dispatch({ type: "add", payload: text });
+        }}
+      >
+        추가
+      </button>
+    </div>
+  );
+}
+
+export default TodoAdd;
+```
+
+- TodoList.jsx 목록용 컴포넌트
+
+```jsx
+import { useContext } from "react";
+import { TodayContext } from "../../TodayContext";
+import TodoItem from "./TodoItem";
+
+function TodoList() {
+  const { todos, dispatch } = useContext(TodayContext);
+  return (
+    <div>
+      <h2>TodoList</h2>
+      <div>
+        {todos.map(item => (
+          <TodoItem key={item.id} todo={item} />
+        ))}
+      </div>
+    </div>
+  );
+}
+
+export default TodoList;
+```
+
+- TodoItem.jsx 하나의 Todo 컴포넌트
+
+```jsx
+import { useContext } from "react";
+import { TodayContext } from "../../TodayContext";
+
+function TodoItem({ todo }) {
+  const { todos, dispatch } = useContext(TodayContext);
+  return (
+    <div>
+      <span
+        style={{ textDecoration: todo.completed ? "line-through" : "none" }}
+        onClick={() => dispatch({ type: "toggle", payload: todo.id })}
+      >
+        {todo.text}
+      </span>
+      <button onClick={() => dispatch({ type: "delete", payload: todo.id })}>
+        삭제
+      </button>
+    </div>
+  );
+}
+
+export default TodoItem;
+```
